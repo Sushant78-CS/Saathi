@@ -1,8 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SOSAlert } from "./sos";
 
 const KEY = "pending_sos";
 
-export const savePendingSOS = async (alert: any) => {
+export const savePendingSOS = async (alert: SOSAlert) => {
   const existing = await AsyncStorage.getItem(KEY);
 
   const alerts = existing ? JSON.parse(existing) : [];

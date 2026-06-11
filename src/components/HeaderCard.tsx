@@ -1,3 +1,4 @@
+import { FONT_SIZE, ICON_SIZE, RADIUS, SPACING } from "@/constants/responsive";
 import { router } from "expo-router";
 import { User as FirebaseUser } from "firebase/auth";
 import { User } from "lucide-react-native";
@@ -26,24 +27,25 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: SPACING.md,
   },
 
   greeting: {
     color: "#6B7280",
-    fontSize: 13,
+    fontSize: FONT_SIZE.small,
   },
 
   name: {
-    fontSize: 24,
+    fontSize: FONT_SIZE.heading,
     fontWeight: "700",
     color: "#111827",
-    marginTop: 2,
+    marginTop: SPACING.xs / 2,
   },
 
   profileBtn: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: ICON_SIZE.xl + SPACING.xs,
+    height: ICON_SIZE.xl + SPACING.xs,
+    borderRadius: RADIUS.full,
     backgroundColor: "#F3F4F6",
     justifyContent: "center",
     alignItems: "center",

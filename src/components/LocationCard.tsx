@@ -1,43 +1,88 @@
-import { MapPin } from "lucide-react-native";
+import {
+  CARD,
+  FONT_SIZE,
+  ICON_SIZE,
+  RADIUS,
+  SPACING,
+} from "@/constants/responsive";
+import { Ionicons } from "@expo/vector-icons";
+import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-export function LocationCard({ location }: { location: string }) {
+export default function LocationCard({
+  location,
+  loading,
+}: {
+  location: string;
+  loading: boolean;
+}) {
   return (
-    <View style={styles.locationCard}>
-      <View style={styles.locationRow}>
-        <MapPin size={18} color="#1565C0" />
-        <Text style={styles.locationTitle}>Current Location</Text>
+    <View style={styles.locationContent}>
+      <Ionicons name="location" size={ICON_SIZE.md} color="#E53935" />
+
+      <View style={styles.locationTextContainer}>
+        <Text style={styles.locationLabel}>Current Location</Text>
+
+        {loading ? (
+          <>
+            <View style={styles.skeletonLineLarge} />
+            <View style={styles.skeletonLineSmall} />
+          </>
+        ) : (
+          <Text style={styles.locationText}>{location}</Text>
+        )}
       </View>
-      <Text style={styles.locationText}>{location}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  locationCard: {
-    marginTop: 24,
-    backgroundColor: "#F8FAFC",
-    borderRadius: 16,
-    padding: 16,
+  card: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: CARD.borderRadius,
+    padding: CARD.padding,
+
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+
+    marginTop: SPACING.md,
   },
-  locationRow: {
+
+  locationContent: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
   },
-  locationTitle: {
-    marginLeft: 8,
-    fontSize: 13,
-    color: "#374151",
-    fontWeight: "600",
+
+  locationTextContainer: {
+    flex: 1,
+    marginLeft: SPACING.md,
   },
+
+  locationLabel: {
+    fontSize: FONT_SIZE.small,
+    color: "#6B7280",
+    marginBottom: SPACING.xs,
+  },
+
   locationText: {
-    marginTop: 10,
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: FONT_SIZE.body,
     color: "#111827",
+    fontWeight: "600",
+    lineHeight: FONT_SIZE.body * 1.5,
   },
-  safeStatus: {
-    marginTop: 8,
-    fontSize: 13,
+
+  skeletonLineLarge: {
+    height: FONT_SIZE.body,
+    width: "90%",
+    backgroundColor: "#E5E7EB",
+    borderRadius: RADIUS.full,
+    marginBottom: SPACING.xs,
+  },
+
+  skeletonLineSmall: {
+    height: FONT_SIZE.body,
+    width: "60%",
+    backgroundColor: "#E5E7EB",
+    borderRadius: RADIUS.full,
   },
 });

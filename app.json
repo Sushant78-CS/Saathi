@@ -1,14 +1,15 @@
 {
   "expo": {
-    "name": "SaveHuman",
-    "slug": "SaveHuman",
+    "name": "Rakshak",
+    "slug": "rakshak",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "savehuman",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "com.sushant878.SaveHuman"
     },
     "android": {
       "permissions": [
@@ -17,7 +18,13 @@
         "BLUETOOTH_SCAN",
         "BLUETOOTH_CONNECT",
         "BLUETOOTH_ADVERTISE",
-        "ACCESS_FINE_LOCATION"
+        "ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_WIFI_STATE",
+        "android.permission.CHANGE_WIFI_STATE",
+        "android.permission.NEARBY_WIFI_DEVICES",
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_CONNECT"
       ],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
@@ -49,6 +56,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "42f5ea4c-319b-4131-b44b-607a428ef4c7"
+      }
+    },
+    "owner": "sushant878s-organization"
   }
 }

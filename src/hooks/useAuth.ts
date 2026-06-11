@@ -27,7 +27,7 @@ const useAuth = () => {
           } finally {
             setLoading(false);
           }
-          console.log("User logged in:", currentUser);
+          // console.log("User logged in:", currentUser);
         } else {
           setUser(null);
           setProfile(null);

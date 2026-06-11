@@ -20,9 +20,9 @@ export default function ScreenIndex() {
     );
   }
 
-  if (isProfileCompleted) {
-    return <Redirect href="/screens/home" />;
-  }
+  // if (isProfileCompleted) {
+  return <Redirect href="/screens/home" />;
+  // }
 
-  return <Redirect href="/screens/details" />;
+  // return <Redirect href="/screens/details" />;
 }

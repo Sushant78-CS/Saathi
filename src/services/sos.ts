@@ -1,32 +1,62 @@
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { EmergencyContact } from "@/firebase/profile";
+import {
+  addDoc,
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  serverTimestamp,
+  where,
+} from "firebase/firestore";
 import { auth, db } from "../firebase/firebase";
 
 export interface SOSAlert {
   userId: string;
   latitude: number;
   longitude: number;
+  address: string;
   locationName: string;
+  name: string;
+  bloodGroup?: string;
+  age?: number;
+  emergencyContacts: EmergencyContact[];
   status: "ACTIVE" | "RESOLVED";
 }
 
-const createSOSAlert = async (
-  latitude: number,
-  longitude: number,
-  locationName: string,
-) => {
-  if (!auth.currentUser) {
-    throw new Error("User not authenticated");
-  }
-
+const createSOSAlert = async (payload: SOSAlert) => {
   const docRef = await addDoc(collection(db, "sosAlerts"), {
-    userId: auth.currentUser.uid,
-    latitude,
-    longitude,
-    locationName,
+    userId: payload.userId,
+    name: payload.name,
+    latitude: payload.latitude,
+    longitude: payload.longitude,
+    address: payload.address,
+    locationName: payload.locationName,
+    bloodGroup: payload.bloodGroup || "",
+    age: payload.age || "",
+    emergencyContacts: payload.emergencyContacts,
     status: "ACTIVE",
     createdAt: serverTimestamp(),
   });
   return docRef.id;
+};
+
+export const subscribeSOSHistory = (callback: (alerts: any[]) => void) => {
+  if (!auth.currentUser) return () => {};
+
+  const q = query(
+    collection(db, "sosAlerts"),
+    where("userId", "==", auth.currentUser.uid),
+    orderBy("createdAt", "desc"),
+  );
+
+  return onSnapshot(q, (snapshot) => {
+    callback(
+      snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })),
+    );
+  });
 };
 
 export default createSOSAlert;

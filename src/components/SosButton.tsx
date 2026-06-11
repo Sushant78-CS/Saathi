@@ -7,7 +7,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-export function SosButton({
+export default function SosButton({
   handleSOS,
   cancelSOS,
   countDown,

@@ -7,7 +7,16 @@ export const uploadPendingSOS = async () => {
   if (alerts.length === 0) return;
 
   for (const alert of alerts) {
-    await createSOSAlert(alert.latitude, alert.longitude, alert.address);
+    await createSOSAlert({
+      userId: alert.userId,
+      latitude: alert.latitude,
+      longitude: alert.longitude,
+      address: alert.address,
+      locationName: alert.address,
+      name: alert.name,
+      emergencyContacts: alert.emergencyContacts,
+      status: "ACTIVE",
+    });
   }
 
   await clearPendingSOS();

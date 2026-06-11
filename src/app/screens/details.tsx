@@ -19,15 +19,35 @@ export default function CompleteProfileScreen() {
     phoneNumber: "",
     age: "",
     bloodGroup: "",
-    emergencyName: "",
-    relationship: "",
-    emergencyPhone: "",
+    emergencyContact: [
+      {
+        name: "",
+        relationship: "",
+        phone: "",
+      },
+    ],
+    profileComplete: true,
   });
 
   const updateField = (field: string, value: string) => {
     setForm((prev) => ({
       ...prev,
       [field]: value,
+    }));
+  };
+
+  const updateEmergencyContact = (
+    field: "name" | "relationship" | "phone",
+    value: string,
+  ) => {
+    setForm((prev) => ({
+      ...prev,
+      emergencyContact: [
+        {
+          ...prev.emergencyContact[0],
+          [field]: value,
+        },
+      ],
     }));
   };
 
@@ -79,21 +99,23 @@ export default function CompleteProfileScreen() {
 
         <Input
           label="Contact Name *"
-          value={form.emergencyName}
-          onChange={(text: string) => updateField("emergencyName", text)}
+          value={form.emergencyContact[0]?.name || ""}
+          onChange={(text: string) => updateEmergencyContact("name", text)}
         />
 
         <Input
           label="Relationship *"
-          value={form.relationship}
-          onChange={(text: string) => updateField("relationship", text)}
+          value={form.emergencyContact[0]?.relationship || ""}
+          onChange={(text: string) =>
+            updateEmergencyContact("relationship", text)
+          }
         />
 
         <Input
           label="Emergency Number *"
-          value={form.emergencyPhone}
+          value={form.emergencyContact[0]?.phone || ""}
           keyboardType="phone-pad"
-          onChange={(text: string) => updateField("emergencyPhone", text)}
+          onChange={(text: string) => updateEmergencyContact("phone", text)}
         />
 
         <TouchableOpacity
@@ -188,6 +210,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 14,
     backgroundColor: "#F9FAFB",
+    color: "#000",
   },
 
   button: {

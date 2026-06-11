@@ -1,6 +1,6 @@
 import { PermissionsAndroid, Platform } from "react-native";
 
-export const requestBluetoothPermission = async () => {
+const requestBluetoothPermission = async () => {
   if (Platform.OS !== "android") return true;
 
   const permission = await PermissionsAndroid.requestMultiple([
@@ -14,3 +14,5 @@ export const requestBluetoothPermission = async () => {
     (value) => value === PermissionsAndroid.RESULTS.GRANTED,
   );
 };
+
+export default requestBluetoothPermission;

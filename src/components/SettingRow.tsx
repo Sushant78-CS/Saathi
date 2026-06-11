@@ -6,7 +6,7 @@ function SettingRow({ title }: { title: string }) {
     <TouchableOpacity style={styles.row}>
       <Text style={styles.settingText}>{title}</Text>
 
-      <Feather name="chevron-right" size={18} color="#94A3B8" />
+      <Feather name="chevron-right" size={18} color="#000" />
     </TouchableOpacity>
   );
 }
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
   },
   settingText: {
-    color: "#E2E8F0",
+    color: "#000",
     fontSize: 13,
   },
 });

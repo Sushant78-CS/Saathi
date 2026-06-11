@@ -1,13 +1,17 @@
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "./firebase";
 
+export interface EmergencyContact {
+  name: string;
+  relationship: string;
+  phone: string;
+}
+
 export interface Profile {
   phoneNumber: string;
   age: string;
   bloodGroup: string;
-  emergencyName: string;
-  relationship: string;
-  emergencyPhone: string;
+  emergencyContact: EmergencyContact[];
   profileComplete: boolean;
 }
 

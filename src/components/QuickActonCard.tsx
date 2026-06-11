@@ -1,98 +1,84 @@
+import { CARD, FONT_SIZE, SPACING } from "@/constants/responsive";
 import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-export function QuickActionCard() {
+export default function QuickActionCard() {
+  const router = useRouter();
   return (
     <>
       <Text style={styles.sectionTitle}>Quick Actions</Text>
       <View style={styles.actionsRow}>
-        <ActionCard icon="phone-call" label="Contacts" />
+        <ActionCard
+          onPress={() => router.push("/screens/emergencycontacts")}
+          icon="phone-call"
+          label="Contacts"
+        />
 
-        <ActionCard icon="share-2" label="Share" />
+        <ActionCard onPress={() => {}} icon="share-2" label="Share" />
 
-        <ActionCard icon="clock" label="History" />
-      </View>
-      <Text style={styles.sectionTitle}>Safety Status</Text>
-
-      <View style={styles.statusCard}>
-        <StatusItem label="Crash Detection" active />
-        <StatusItem label="Location Tracking" active />
-        <StatusItem label="Offline SOS" active />
+        <ActionCard
+          onPress={() => router.push("/screens/soshistory")}
+          icon="clock"
+          label="History"
+        />
       </View>
     </>
   );
 }
 
-function ActionCard({ icon, label }: { icon: any; label: string }) {
+export function ActionCard({
+  onPress,
+  icon,
+  label,
+}: {
+  onPress: () => void;
+  icon: any;
+  label: string;
+}) {
   return (
-    <TouchableOpacity style={styles.actionCard}>
+    <TouchableOpacity onPress={onPress} style={styles.actionCard}>
       <Feather name={icon} size={20} color="#1565C0" />
       <Text style={styles.actionText}>{label}</Text>
     </TouchableOpacity>
   );
 }
 
-function StatusItem({ label, active }: { label: string; active: boolean }) {
-  return (
-    <View style={styles.statusRow}>
-      <Text style={styles.statusLabel}>{label}</Text>
-
-      <Text
-        style={{
-          color: active ? "#16A34A" : "#DC2626",
-          fontWeight: "600",
-        }}
-      >
-        {active ? "ON" : "OFF"}
-      </Text>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#1A1A1A",
-    marginBottom: 12,
-    marginTop: 12,
+    fontSize: FONT_SIZE.subtitle,
+    fontWeight: "700",
+    color: "#111827",
+    marginTop: SPACING.md,
+    marginBottom: SPACING.sm,
   },
+
   actionsRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 24,
+    gap: SPACING.sm,
+    marginBottom: SPACING.sm,
   },
+
   actionCard: {
     flex: 1,
-    alignItems: "center",
+
+    backgroundColor: "#FFFFFF",
+
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+
+    borderRadius: CARD.borderRadius,
+    paddingVertical: SPACING.md,
+
     justifyContent: "center",
-    backgroundColor: "#F5F5F5",
-    borderRadius: 12,
-    paddingVertical: 16,
-    marginHorizontal: 4,
-  },
-  actionText: {
-    marginTop: 8,
-    fontSize: 14,
-    color: "#1565C0",
-    fontWeight: "500",
-  },
-  statusCard: {
-    backgroundColor: "#F5F5F5",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 24,
-  },
-  statusRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
   },
-  statusLabel: {
-    fontSize: 14,
-    color: "#1A1A1A",
-    fontWeight: "500",
+
+  actionText: {
+    marginTop: SPACING.xs,
+    fontSize: FONT_SIZE.small,
+    color: "#1565C0",
+    fontWeight: "600",
   },
 });

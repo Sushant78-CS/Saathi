@@ -1,4 +1,4 @@
-import { InfoRow } from "@/components/InfoRow";
+import InfoRow from "@/components/InfoRow";
 import SettingRow from "@/components/SettingRow";
 import { signOut } from "@/firebase/auth";
 import { getProfile, Profile } from "@/firebase/profile";
@@ -40,8 +40,11 @@ export default function ProfileScreen() {
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
         <View style={styles.headerBack}>
-          <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={26} color="#fff" />
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.back()}
+          >
+            <Ionicons name="arrow-back" size={22} color="#111827" />
           </TouchableOpacity>
         </View>
         <View style={styles.avatar}>
@@ -60,7 +63,10 @@ export default function ProfileScreen() {
       </View>
 
       <View style={styles.quickRow}>
-        <TouchableOpacity style={styles.quickCard}>
+        <TouchableOpacity
+          onPress={() => router.push("/screens/emergencycontacts")}
+          style={styles.quickCard}
+        >
           <Feather name="phone-call" size={24} color="#ef4444" />
           <Text style={styles.quickLabel}>Emergency Contacts</Text>
         </TouchableOpacity>
@@ -103,24 +109,15 @@ export default function ProfileScreen() {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Emergency Contact</Text>
-
-        <InfoRow
-          icon="user"
-          label="Contact Name"
-          value={profileData?.emergencyName || "-"}
-        />
-
-        <InfoRow
-          icon="heart"
-          label="Relationship"
-          value={profileData?.relationship || "-"}
-        />
-
-        <InfoRow
-          icon="phone"
-          label="Emergency Number"
-          value={profileData?.emergencyPhone || "-"}
-        />
+        {profileData?.emergencyContact?.map((contact, index) => (
+          <View key={index}>
+            <InfoRow
+              icon="user"
+              label="Contact Name"
+              value={contact.name || "-"}
+            />
+          </View>
+        ))}
       </View>
 
       <View style={styles.section}>
@@ -145,7 +142,7 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0F172A",
+    backgroundColor: "#F8FAFC",
   },
 
   header: {
@@ -158,8 +155,17 @@ const styles = StyleSheet.create({
   headerBack: {
     position: "absolute",
     left: 24,
-    top: 20,
+    top: 28,
     zIndex: 10,
+  },
+
+  backButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: "#eaebee",
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   avatar: {
@@ -172,25 +178,25 @@ const styles = StyleSheet.create({
   },
 
   avatarText: {
-    color: "#fff",
+    color: "#FFFFFF",
     fontSize: 28,
     fontWeight: "700",
   },
 
   name: {
-    color: "#fff",
+    color: "#111827",
     fontSize: 18,
     fontWeight: "700",
     marginTop: 12,
   },
 
   email: {
-    color: "#94A3B8",
+    color: "#6B7280",
     marginTop: 4,
   },
 
   statusBadge: {
-    backgroundColor: "#22C55E",
+    backgroundColor: "#DCFCE7",
     paddingHorizontal: 12,
     paddingVertical: 5,
     borderRadius: 20,
@@ -198,7 +204,7 @@ const styles = StyleSheet.create({
   },
 
   statusText: {
-    color: "#fff",
+    color: "#15803D",
     fontSize: 12,
     fontWeight: "600",
   },
@@ -211,28 +217,47 @@ const styles = StyleSheet.create({
 
   quickCard: {
     width: "42%",
-    backgroundColor: "#1E293B",
+    backgroundColor: "#FFFFFF",
     borderRadius: 16,
     paddingVertical: 20,
     alignItems: "center",
+
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 3,
   },
 
   quickLabel: {
-    color: "#fff",
+    color: "#111827",
     marginTop: 8,
     fontSize: 12,
+    fontWeight: "500",
   },
 
   section: {
     marginHorizontal: 16,
     marginBottom: 16,
-    backgroundColor: "#1E293B",
+    backgroundColor: "#FFFFFF",
     borderRadius: 16,
     paddingVertical: 10,
+
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 3,
   },
 
   sectionTitle: {
-    color: "#94A3B8",
+    color: "#64748B",
     fontSize: 13,
     fontWeight: "700",
     paddingHorizontal: 16,
@@ -240,7 +265,7 @@ const styles = StyleSheet.create({
   },
 
   logoutBtn: {
-    backgroundColor: "#7F1D1D",
+    backgroundColor: "#E53935",
     marginHorizontal: 16,
     height: 50,
     borderRadius: 12,
@@ -251,13 +276,13 @@ const styles = StyleSheet.create({
   },
 
   logoutText: {
-    color: "#fff",
+    color: "#FFFFFF",
     fontWeight: "600",
   },
 
   version: {
     textAlign: "center",
-    color: "#64748B",
+    color: "#94A3B8",
     marginVertical: 20,
   },
 });

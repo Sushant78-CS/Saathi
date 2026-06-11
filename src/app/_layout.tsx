@@ -1,7 +1,8 @@
 import useAuth from "@/hooks/useAuth";
+import { initNearbyService } from "@/services/nearby";
 import useAuthStore from "@/store/authStore";
 import { Stack } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { ActivityIndicator, StatusBar, View } from "react-native";
 
 const RootLayout = () => {
@@ -18,6 +19,10 @@ export default RootLayout;
 
 function InitialRootLayout() {
   const { user, loading } = useAuthStore();
+
+  useEffect(() => {
+    initNearbyService();
+  }, []);
 
   if (loading) {
     return (

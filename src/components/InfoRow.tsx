@@ -1,7 +1,7 @@
 import { Feather } from "@expo/vector-icons";
 import { StyleSheet, Text, View } from "react-native";
 
-export function InfoRow({
+export default function InfoRow({
   icon,
   label,
   value,
@@ -38,12 +38,12 @@ const styles = StyleSheet.create({
   },
 
   label: {
-    color: "#E2E8F0",
+    color: "#000",
     fontSize: 13,
   },
 
   value: {
-    color: "#94A3B8",
+    color: "#000",
     fontSize: 13,
   },
 });
