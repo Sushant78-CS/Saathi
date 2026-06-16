@@ -60,7 +60,17 @@ export default function NearbyScreen() {
         .catch((error) => {
           console.error("Connection request error:", error);
         });
+    });
 
+    const unsubdisConnected = Nearby.onDisconnected((peer) => {
+      console.log("Disconnected from peer:", peer.peerId);
+      connectedPeers.delete(peer.peerId);
+      setDevices((prev) => prev.filter((d) => d.peerId !== peer.peerId));
+    });
+
+    const unsubConnected = Nearby.onConnected((peer) => {
+      console.log("Connected to peer:", peer.peerId);
+      connectedPeers.add(peer.peerId);
       setDevices((prev) => {
         const exists = prev.find((d) => d.peerId === peer.peerId);
         if (exists) return prev;
@@ -68,20 +78,8 @@ export default function NearbyScreen() {
       });
     });
 
-    const unsubdisConnected = Nearby.onDisconnected((peer) => {
-      console.log("Disconnected from peer:", peer.peerId);
-      connectedPeers.delete(peer.peerId);
-    });
-
-    const unsubConnected = Nearby.onConnected((peer) => {
-      console.log("Connected to peer:", peer.peerId);
-      connectedPeers.add(peer.peerId);
-    });
-
     const unsubLost = Nearby.onPeerLost((peer) => {
-      connectedPeers.delete(peer.peerId);
       console.log("Peer lost:", peer.peerId);
-      setDevices((prev) => prev.filter((d) => d.peerId !== peer.peerId));
     });
     return () => {
       unSubscribe();
@@ -269,16 +267,18 @@ export default function NearbyScreen() {
                 <View style={styles.deviceIcon}>
                   <Ionicons name="phone-portrait" size={20} color="#E53935" />
                 </View>
-
                 <View style={styles.deviceInfo}>
                   <Text style={styles.deviceName}>
                     {device.name || device.endpointName || "Unknown Device"}
                   </Text>
 
-                  <Text style={styles.deviceStatus}>Available Nearby</Text>
+                  <View style={styles.connectedRow}>
+                    <View style={styles.connectedDot} />
+                    <Text style={styles.connectedText}>Connected</Text>
+                  </View>
                 </View>
 
-                <Ionicons name="chevron-forward" size={18} color="#9CA3AF" />
+                <Ionicons name="checkmark-circle" size={22} color="#22C55E" />
               </View>
             </View>
           ))
@@ -286,9 +286,14 @@ export default function NearbyScreen() {
       </ScrollView>
 
       <TouchableOpacity
-        style={styles.actionButton}
+        style={[
+          styles.actionButton,
+          devices.length === 0 && styles.disabledButton,
+        ]}
+        disabled={devices.length === 0}
         onPress={() => {
           if (!sosLocation) return;
+
           broadcastSOS({
             type: "SOS",
             userId: sosLocation.userId,
@@ -303,13 +308,47 @@ export default function NearbyScreen() {
           });
         }}
       >
-        <Text style={styles.actionButtonText}>Send SOS</Text>
+        <Ionicons
+          name={devices.length > 0 ? "send" : undefined}
+          size={20}
+          color="#FFF"
+        />
+
+        <Text style={styles.actionButtonText}>
+          {devices.length > 0
+            ? `Broadcast SOS (${devices.length})`
+            : "Waiting for Devices"}
+        </Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  disabledButton: {
+    backgroundColor: "#9CA3AF",
+  },
+
+  connectedRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
+  },
+
+  connectedDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#22C55E",
+    marginRight: 6,
+  },
+
+  connectedText: {
+    fontSize: 13,
+    color: "#22C55E",
+    fontWeight: "600",
+  },
+
   container: {
     flex: 1,
     backgroundColor: "#FFFFFF",

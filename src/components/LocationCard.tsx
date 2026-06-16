@@ -6,16 +6,48 @@ import {
   SPACING,
 } from "@/constants/responsive";
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useEffect } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from "react-native-reanimated";
 
 export default function LocationCard({
   location,
   loading,
+  onRefresh,
 }: {
   location: string;
   loading: boolean;
+  onRefresh: () => void;
 }) {
+  const rotation = useSharedValue(0);
+
+  useEffect(() => {
+    if (loading) {
+      rotation.value = withRepeat(
+        withTiming(360, { duration: 1000 }),
+        -1,
+        false,
+      );
+    } else {
+      rotation.value = withTiming(0);
+    }
+  }, [loading]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          rotate: `${rotation.value}deg`,
+        },
+      ],
+    };
+  });
+
   return (
     <View style={styles.locationContent}>
       <Ionicons name="location" size={ICON_SIZE.md} color="#E53935" />
@@ -32,6 +64,21 @@ export default function LocationCard({
           <Text style={styles.locationText}>{location}</Text>
         )}
       </View>
+
+      <TouchableOpacity
+        style={styles.refreshButton}
+        activeOpacity={0.7}
+        disabled={loading}
+        onPress={onRefresh}
+      >
+        <Animated.View style={animatedStyle}>
+          <Ionicons
+            name={loading ? "sync" : "refresh"}
+            size={ICON_SIZE.md}
+            color="#E53935"
+          />
+        </Animated.View>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -84,5 +131,16 @@ const styles = StyleSheet.create({
     width: "60%",
     backgroundColor: "#E5E7EB",
     borderRadius: RADIUS.full,
+  },
+
+  refreshButton: {
+    width: 38,
+    height: 38,
+    borderRadius: RADIUS.full,
+    backgroundColor: "#FEF2F2",
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#FECACA",
   },
 });

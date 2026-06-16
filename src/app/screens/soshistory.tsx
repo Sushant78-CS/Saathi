@@ -52,45 +52,58 @@ const SOSHistory = () => {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        {alerts.map((alert) => (
-          <TouchableOpacity key={alert.id} style={styles.historyCard}>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <View style={{ flex: 1 }}>
-                <View style={styles.cardHeader}>
-                  <View
-                    style={[
-                      styles.statusDot,
-                      {
-                        backgroundColor:
-                          alert.status === "ACTIVE" ? "#10B981" : "#EF4444",
-                      },
-                    ]}
-                  />
-                  <Text style={styles.statusText}>{alert.status}</Text>
+        {alerts.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Ionicons name="time-outline" size={64} color="#D1D5DB" />
+
+            <Text style={styles.emptyTitle}>No SOS History</Text>
+
+            <Text style={styles.emptySubtitle}>
+              Your emergency alerts will appear here once an SOS is triggered.
+            </Text>
+          </View>
+        ) : (
+          alerts.map((alert) => (
+            <TouchableOpacity key={alert.id} style={styles.historyCard}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <View style={{ flex: 1 }}>
+                  <View style={styles.cardHeader}>
+                    <View
+                      style={[
+                        styles.statusDot,
+                        {
+                          backgroundColor:
+                            alert.status === "ACTIVE" ? "#10B981" : "#EF4444",
+                        },
+                      ]}
+                    />
+                    <Text style={styles.statusText}>{alert.status}</Text>
+                  </View>
+
+                  <Text style={styles.location}>{alert.locationName}</Text>
+
+                  <Text style={styles.time}>
+                    {alert.createdAt?.toDate().toLocaleString("en-IN", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                      hour: "numeric",
+                      minute: "2-digit",
+                    })}
+                  </Text>
                 </View>
 
-                <Text style={styles.location}>{alert.locationName}</Text>
-                <Text style={styles.time}>
-                  {alert.createdAt?.toDate().toLocaleString("en-IN", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                    hour: "numeric",
-                    minute: "2-digit",
-                  })}
-                </Text>
+                <Ionicons name="chevron-forward" size={16} color="#9CA3AF" />
               </View>
-
-              <Ionicons name="chevron-forward" size={16} color="#9CA3AF" />
-            </View>
-          </TouchableOpacity>
-        ))}
+            </TouchableOpacity>
+          ))
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -111,6 +124,29 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 18,
     height: 40,
+  },
+
+  emptyContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 80,
+  },
+
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#111827",
+    marginTop: 16,
+  },
+
+  emptySubtitle: {
+    fontSize: 14,
+    color: "#6B7280",
+    textAlign: "center",
+    marginTop: 8,
+    paddingHorizontal: 32,
+    lineHeight: 20,
   },
 
   backButton: {

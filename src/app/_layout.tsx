@@ -1,5 +1,11 @@
 import useAuth from "@/hooks/useAuth";
-import { initNearbyService } from "@/services/nearby";
+import {
+  initNearbyService,
+  startAdvertise,
+  startDiscovery,
+  stopAdvertise,
+  stopDiscovery,
+} from "@/services/nearby";
 import useAuthStore from "@/store/authStore";
 import { Stack } from "expo-router";
 import React, { useEffect } from "react";
@@ -17,11 +23,22 @@ const RootLayout = () => {
 
 export default RootLayout;
 
+let nearbyStarted = false;
 function InitialRootLayout() {
   const { user, loading } = useAuthStore();
 
   useEffect(() => {
-    initNearbyService();
+    async function init() {
+      if (nearbyStarted) return;
+      nearbyStarted = true;
+      await stopAdvertise();
+      await stopDiscovery();
+      await initNearbyService();
+      await startAdvertise();
+      await startDiscovery();
+      console.log("Nearby service initialized");
+    }
+    init();
   }, []);
 
   if (loading) {

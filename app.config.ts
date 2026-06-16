@@ -20,7 +20,7 @@ const expoConfig = ({ config }: ConfigContext): ExpoConfig => ({
     firebaseAppId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
 
     eas: {
-      projectId: "42f5ea4c-319b-4131-b44b-607a428ef4c7",
+      projectId: "5c127c7d-bcf2-4966-93f3-e223f1ca3ef0",
     },
   },
 });

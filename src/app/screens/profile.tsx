@@ -1,11 +1,10 @@
 import InfoRow from "@/components/InfoRow";
 import SettingRow from "@/components/SettingRow";
 import { signOut } from "@/firebase/auth";
-import { getProfile, Profile } from "@/firebase/profile";
-import authStore from "@/store/authStore";
+import useAuthStore from "@/store/authStore";
 import { Feather, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Dimensions,
   ScrollView,
@@ -19,18 +18,10 @@ const { width } = Dimensions.get("window");
 const AVATAR_SIZE = width * 0.22;
 
 export default function ProfileScreen() {
-  const { user } = authStore();
+  const { user, profile } = useAuthStore();
   const router = useRouter();
-
-  const [profileData, setProfileData] = useState<Profile | null>(null);
-
-  useEffect(() => {
-    const loadProfile = async () => {
-      const data = await getProfile();
-      setProfileData(data);
-    };
-    loadProfile();
-  }, []);
+  console.log("profile profile", profile);
+  console.log("user profile", user);
 
   const handleLogout = async () => {
     await signOut();
@@ -55,7 +46,7 @@ export default function ProfileScreen() {
 
         <Text style={styles.name}>{user?.displayName || "-"}</Text>
 
-        <Text style={styles.email}>{user?.email || "sushant@gmail.com"}</Text>
+        <Text style={styles.email}>{user?.email || "-"}</Text>
 
         <View style={styles.statusBadge}>
           <Text style={styles.statusText}>Safety Profile Active</Text>
@@ -71,7 +62,10 @@ export default function ProfileScreen() {
           <Text style={styles.quickLabel}>Emergency Contacts</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.quickCard}>
+        <TouchableOpacity
+          onPress={() => router.push("/screens/soshistory")}
+          style={styles.quickCard}
+        >
           <MaterialIcons name="history" size={24} color="#ef4444" />
           <Text style={styles.quickLabel}>SOS History</Text>
         </TouchableOpacity>
@@ -91,25 +85,25 @@ export default function ProfileScreen() {
         <InfoRow
           icon="phone"
           label="Phone Number"
-          value={profileData?.phoneNumber || "-"}
+          value={profile?.phoneNumber || "-"}
         />
 
         <InfoRow
           icon="activity"
           label="Blood Group"
-          value={profileData?.bloodGroup || "-"}
+          value={profile?.bloodGroup || "-"}
         />
 
         <InfoRow
           icon="calendar"
           label="Age"
-          value={profileData?.age?.toString() || "-"}
+          value={profile?.age?.toString() || "-"}
         />
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Emergency Contact</Text>
-        {profileData?.emergencyContact?.map((contact, index) => (
+        {profile?.emergencyContact?.map((contact, index) => (
           <View key={index}>
             <InfoRow
               icon="user"

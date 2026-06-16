@@ -5,7 +5,7 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import { useEffect } from "react";
 
 const useAuth = () => {
-  const { setUser, setProfile, user, setLoading } = useAuthStore();
+  const { setUser, setProfile, user, setLoading, profile } = useAuthStore();
 
   useEffect(() => {
     if (!auth) {
@@ -19,11 +19,17 @@ const useAuth = () => {
           setUser(currentUser);
 
           try {
-            const profileData = await getProfile();
-            setProfile(profileData);
+            const existingProfile = useAuthStore.getState().profile;
+            if (
+              !existingProfile ||
+              !existingProfile.profileComplete ||
+              !existingProfile.emergencyContact?.length
+            ) {
+              const profileData = await getProfile();
+              setProfile(profileData);
+            }
           } catch (err) {
             console.error("Failed to fetch profile:", err);
-            setProfile(null);
           } finally {
             setLoading(false);
           }
@@ -39,7 +45,7 @@ const useAuth = () => {
 
     return () => unsubscribe();
   }, []);
-  return { user };
+  return { user, profile };
 };
 
 export default useAuth;

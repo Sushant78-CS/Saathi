@@ -6,24 +6,48 @@ export const getCurrentLocation = async () => {
     console.log("Location permission denied");
     return;
   }
-  const location = await Location.getCurrentPositionAsync({});
-  const coords = {
-    lat: location.coords.latitude,
-    lng: location.coords.longitude,
-  };
-  const res = await Location.reverseGeocodeAsync({
-    latitude: coords.lat,
-    longitude: coords.lng,
+  const location = await Location.getCurrentPositionAsync({
+    accuracy: Location.Accuracy.High,
   });
-  if (res.length > 0) {
-    const place = res[0];
-    const formatted = `${place.name || ""}, ${place.street || ""}, ${place.city || ""}`;
-    console.log(formatted);
-    return {
-      latitude: coords.lat,
-      longitude: coords.lng,
-      address: formatted,
-    };
+
+  let address = "Address unavailable";
+
+  try {
+    const res = await Location.reverseGeocodeAsync({
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    });
+    if (res.length > 0) {
+      const place = res[0];
+      const formatted = `${place.name || ""}, ${place.street || ""}, ${place.city || ""}`;
+      console.log(formatted);
+      address = formatted;
+    }
+  } catch (error) {
+    console.error("Error getting location:", error);
   }
-  return null;
+  return {
+    latitude: location.coords.latitude,
+    longitude: location.coords.longitude,
+    address,
+  };
 };
+
+export const getCurrentCoordinates = async () => {
+  const { status } = await Location.requestForegroundPermissionsAsync();
+
+  if (status !== "granted") {
+    throw new Error("Location permission denied");
+  }
+
+  const location = await Location.getCurrentPositionAsync({
+    accuracy: Location.Accuracy.Highest,
+  });
+
+  return {
+    latitude: location.coords.latitude,
+    longitude: location.coords.longitude,
+  };
+};
+
+export { Location };

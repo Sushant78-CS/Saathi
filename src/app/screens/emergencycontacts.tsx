@@ -8,6 +8,7 @@ import {
 import { Profile, saveProfile } from "@/firebase/profile";
 import useAuthStore from "@/store/authStore";
 import { Ionicons } from "@expo/vector-icons";
+import NetInfo from "@react-native-community/netinfo";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -17,6 +18,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -25,6 +27,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function EmergencyContactsScreen() {
   const router = useRouter();
   const { profile, setProfile } = useAuthStore();
+  console.log("profile emergency", profile);
 
   const [profileData, setProfileData] = useState<Profile | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -33,20 +36,40 @@ export default function EmergencyContactsScreen() {
     relationship: "",
     phone: "",
   });
+  const [isOnline, setIsOnline] = useState(false);
 
   useEffect(() => {
-    const loadProfile = async () => {
-      const data = profile;
-      setProfileData(data);
+    const checkOnlineStatus = async () => {
+      const state = await NetInfo.fetch();
+      setIsOnline(
+        state.isConnected === true && state.isInternetReachable === true,
+      );
     };
-    loadProfile();
+    checkOnlineStatus();
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      setIsOnline(
+        state.isConnected === true && state.isInternetReachable === true,
+      );
+    });
+    return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    setProfileData(profile);
+  }, [profile]);
+
+  const showOfflineToast = (message?: string) => {
+    ToastAndroid.show(message ?? "No internet connection", ToastAndroid.SHORT);
+  };
   const addEmergencyContact = async (contact: {
     name: string;
     relationship: string;
     phone: string;
   }) => {
+    if (!isOnline) {
+      showOfflineToast("Internet required to add contacts");
+      return;
+    }
     if (
       !contact.name.trim() ||
       !contact.phone.trim() ||
@@ -91,6 +114,10 @@ export default function EmergencyContactsScreen() {
       Alert.alert("At least one emergency contact is required");
       return;
     }
+    if (!isOnline) {
+      showOfflineToast("Internet required to delete contacts");
+      return;
+    }
     Alert.alert(
       "Delete Contact",
       "Are you sure you want to remove this emergency contact?",
@@ -106,6 +133,14 @@ export default function EmergencyContactsScreen() {
         },
       ],
     );
+  };
+
+  const handleModal = () => {
+    if (!isOnline) {
+      showOfflineToast("Internet required to manage contacts");
+      return;
+    }
+    setModalVisible(true);
   };
 
   return (
@@ -171,9 +206,7 @@ export default function EmergencyContactsScreen() {
           styles.addButton,
           profileData?.emergencyContact.length == 3 && styles.addButtonDisabled,
         ]}
-        onPress={() => {
-          setModalVisible(true);
-        }}
+        onPress={handleModal}
         disabled={profileData?.emergencyContact.length == 3}
       >
         {profileData?.emergencyContact.length == 3 ? (

@@ -1,3 +1,4 @@
+import { useNearbyStore } from "@/store/nearbyStore";
 import NetInfo from "@react-native-community/netinfo";
 import * as Nearby from "expo-nearby-connections";
 import { Alert, Linking, PermissionsAndroid, Platform } from "react-native";
@@ -53,6 +54,23 @@ export const initNearbyService = async () => {
   if (initialized) return;
   initialized = true;
 
+  Nearby.onPeerFound((peer) => {
+    console.log("[Nearby] Peer Found", peer.peerId);
+
+    if (connectedPeers.has(peer.peerId)) {
+      console.log("[Nearby] Already connected to peer", peer.peerId);
+      return;
+    }
+
+    Nearby.requestConnection(peer.peerId)
+      .then(() => {
+        console.log("[Nearby] Connection request sent", peer.peerId);
+      })
+      .catch((err) => {
+        console.log("[Nearby] Connection request failed", peer.peerId, err);
+      });
+  });
+
   Nearby.onInvitationReceived((request) => {
     console.log("[Nearby] Invitation received:", request.peerId);
     Nearby.acceptConnection(request.peerId)
@@ -63,11 +81,14 @@ export const initNearbyService = async () => {
   Nearby.onConnected((peer) => {
     console.log("[Nearby] Connected to peer:", peer.peerId);
     connectedPeers.add(peer.peerId);
+
+    useNearbyStore.getState().addDevice(peer);
   });
 
   Nearby.onDisconnected((peer) => {
     console.log("[Nearby] Disconnected from peer:", peer.peerId);
     connectedPeers.delete(peer.peerId);
+    useNearbyStore.getState().removeDevice(peer.peerId);
   });
 
   Nearby.onTextReceived(async ({ peerId, text }) => {
@@ -137,9 +158,15 @@ export const broadcastSOS = async (payload: any) => {
     }
   }
 
-  Nearby.onDisconnected((peer) => {
-    console.log("[Nearby] Disconnected from peer:", peer.peerId);
-  });
+  // Nearby.onConnected((peer) => {
+  //   connectedPeers.add(peer.peerId);
+  //   console.log("[Nearby] Connected to peer:", peer.peerId);
+  // });
+
+  // Nearby.onDisconnected((peer) => {
+  //   connectedPeers.delete(peer.peerId);
+  //   console.log("[Nearby] Disconnected from peer:", peer.peerId);
+  // });
 };
 
 export default Nearby;

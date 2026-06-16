@@ -6,60 +6,65 @@ import {
   SMSCard,
   SosButton,
 } from "@/components";
-import { getCurrentLocation } from "@/services/location";
+import ConnectedCard from "@/components/ConnectedCard";
+import { getCurrentCoordinates, getCurrentLocation } from "@/services/location";
 import { broadcastSOS } from "@/services/nearby";
-import { savePendingSOS } from "@/services/offlinesos";
-import { sendEmergencySMS } from "@/services/sms";
+import { startCrashDetector, stopCrashDetector } from "@/services/sensors";
 import createSOSAlert, { SOSAlert } from "@/services/sos";
 import { uploadPendingSOS } from "@/services/uploadpendingsos";
 import useAuthStore from "@/store/authStore";
+import { useNearbyStore } from "@/store/nearbyStore";
 import NetInfo from "@react-native-community/netinfo";
-import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
-  const router = useRouter();
   const { user, profile } = useAuthStore();
+  const { devices } = useNearbyStore();
+
   const [location, setLocation] = useState<string | null>(null);
   const [sosLocation, setSosLocation] = useState<SOSAlert | null>(null);
   const [countDown, setCountDown] = useState<number | null>(null);
-  const [devices, setDevices] = useState<any[]>([]);
   const [locationLoading, setLocationLoading] = useState(true);
 
   useEffect(() => {
     if (!user) {
       return;
     }
-    const loadLocation = async () => {
-      try {
-        setLocationLoading(true);
 
-        const loc = await getCurrentLocation();
-        setLocation(loc?.address || "Not Found");
-      } catch (err) {
-        console.error("Error loading location:", err);
-        setLocation("Not Found");
-      } finally {
-        setLocationLoading(false);
-      }
-    };
     loadLocation();
   }, [user]);
 
   useEffect(() => {
-    if (countDown == null) return;
-    if (countDown === 0) {
-      sendSOS();
-      setCountDown(null);
-      return;
-    }
+    startCrashDetector(() => {
+      console.log("CRASH DETECTED");
 
-    const timer = setTimeout(() => {
-      setCountDown((prev) => (prev ? prev - 1 : null));
-    }, 1000);
-    return () => clearTimeout(timer);
+      if (countDown == null) {
+        handleSOS();
+      }
+    });
+
+    return () => {
+      stopCrashDetector();
+    };
+  }, []);
+
+  useEffect(() => {
+    const sendSosAsync = async () => {
+      if (countDown == null) return;
+      if (countDown === 0) {
+        await sendSOS();
+        setCountDown(null);
+        return;
+      }
+
+      const timer = setTimeout(() => {
+        setCountDown((prev) => (prev ? prev - 1 : null));
+      }, 1000);
+      return () => clearTimeout(timer);
+    };
+    sendSosAsync();
   }, [countDown]);
 
   useEffect(() => {
@@ -73,15 +78,18 @@ export default function HomeScreen() {
   }, []);
 
   const handleSOS = async () => {
+    if (countDown !== null) return;
+    console.log("handleSOS called");
+
     setCountDown(5);
     try {
-      const location = await getCurrentLocation();
+      const location = await getCurrentCoordinates();
       setSosLocation({
         userId: user?.uid || "",
-        address: location?.address || "Unknown",
+        address: "Unknown",
         latitude: location?.latitude || 0,
         longitude: location?.longitude || 0,
-        locationName: location?.address || "Unknown",
+        locationName: "Unknown",
         name: user?.displayName || "",
         emergencyContacts: profile?.emergencyContact || [],
         status: "ACTIVE",
@@ -125,20 +133,21 @@ Please contact or assist immediately.
           userId: sosLocation.userId,
           latitude: sosLocation.latitude,
           longitude: sosLocation.longitude,
-          address: sosLocation.address,
-          locationName: sosLocation.address,
+          address: "Unknown",
+          locationName: "Unknown",
           name: sosLocation.name,
           hopCount: 0,
           emergencyContacts: sosLocation.emergencyContacts,
           status: "ACTIVE" as const,
         };
-        await savePendingSOS(payload);
-        broadcastSOS(payload);
+        // await savePendingSOS(payload);
+        await broadcastSOS(payload);
+        console.log("BroadCasting Completed");
 
         const phoneNumber = profile?.emergencyContact.map((c) => c.phone) || [];
         console.log("Phone numbers:", phoneNumber);
 
-        await sendEmergencySMS(phoneNumber, message);
+        // await sendEmergencySMS(phoneNumber, message);
 
         console.log("SOS saved offline + broadcasted");
         return;
@@ -148,17 +157,17 @@ Please contact or assist immediately.
         userId: sosLocation.userId,
         latitude: sosLocation.latitude,
         longitude: sosLocation.longitude,
-        address: sosLocation.address,
-        locationName: sosLocation.address,
+        address: "Unknown",
+        locationName: "Unknown",
         name: sosLocation.name,
         emergencyContacts: sosLocation.emergencyContacts,
         status: "ACTIVE",
       });
 
-      await sendEmergencySMS(
-        profile?.emergencyContact.map((c) => c.phone) || [],
-        message,
-      );
+      // await sendEmergencySMS(
+      //   profile?.emergencyContact.map((c) => c.phone) || [],
+      //   message,
+      // );
 
       console.log("Connected:", state.isConnected);
       console.log("SOS Location:", sosLocation);
@@ -170,9 +179,28 @@ Please contact or assist immediately.
     }
   };
 
+  const loadLocation = async () => {
+    try {
+      setLocationLoading(true);
+
+      const loc = await getCurrentLocation();
+      setLocation(loc?.address || "Not Found");
+    } catch (err) {
+      console.error("Error loading location:", err);
+      setLocation("Not Found");
+    } finally {
+      setLocationLoading(false);
+    }
+  };
+
   if (!user) {
     return null;
   }
+
+  // useEffect(() => {
+  //   const data = AsyncStorage.getItem("auth-storage");
+  //   console.log(data);
+  // }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -181,6 +209,7 @@ Please contact or assist immediately.
         <LocationCard
           location={location || "Not Found"}
           loading={locationLoading}
+          onRefresh={loadLocation}
         />
         <SosButton
           handleSOS={handleSOS}
@@ -190,6 +219,7 @@ Please contact or assist immediately.
         <NearbyCard />
         <SMSCard />
         <QuickActionCard />
+        <ConnectedCard devices={devices} />
       </ScrollView>
     </SafeAreaView>
   );

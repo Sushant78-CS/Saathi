@@ -6,11 +6,12 @@ import {
   RADIUS,
   SPACING,
 } from "@/constants/responsive";
-import { getCurrentLocation } from "@/services/location";
+import { getCurrentCoordinates, Location } from "@/services/location";
 import { sendEmergencySMS } from "@/services/sms";
 import { SOSAlert } from "@/services/sos";
 import useAuthStore from "@/store/authStore";
 import { Ionicons } from "@expo/vector-icons";
+import NetInfo from "@react-native-community/netinfo";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -34,20 +35,47 @@ export default function SMSPage() {
       try {
         setLocationLoading(true);
 
-        const loc = await getCurrentLocation();
+        const coords = await getCurrentCoordinates();
+        let address = "Address unavailable";
+
+        try {
+          const net = await NetInfo.fetch();
+          if (net.isConnected) {
+            const location = await Location.reverseGeocodeAsync({
+              latitude: coords.latitude,
+              longitude: coords.longitude,
+            });
+            if (location.length > 0) {
+              const place = location[0];
+
+              address = `${place.name || ""}, ${place.street || ""}, ${place.city || ""}`;
+            }
+          }
+        } catch (e) {
+          console.error("Error getting address:", e);
+        }
         setSosLocation({
           userId: user?.uid || "",
-          address: loc?.address || "Unknown",
-          latitude: loc?.latitude || 0,
-          longitude: loc?.longitude || 0,
-          locationName: loc?.address || "Unknown",
+          address: address,
+          latitude: coords?.latitude || 0,
+          longitude: coords?.longitude || 0,
+          locationName: address,
           name: user?.displayName || "",
           emergencyContacts: profile?.emergencyContact || [],
           status: "ACTIVE",
         });
       } catch (err) {
         console.error("Error loading location:", err);
-        setSosLocation(null);
+        setSosLocation({
+          userId: user?.uid || "",
+          latitude: 0,
+          longitude: 0,
+          address: "Location unavailable",
+          locationName: "Location unavailable",
+          name: user?.displayName || "",
+          emergencyContacts: [],
+          status: "ACTIVE",
+        });
       } finally {
         setLocationLoading(false);
       }
@@ -56,6 +84,7 @@ export default function SMSPage() {
   }, []);
 
   const handleSendSMS = async () => {
+    console.log("SOS location:", sosLocation);
     try {
       const message = `
 🚨 EMERGENCY SOS
@@ -75,8 +104,7 @@ This alert was sent from Safara.
 Please contact or assist immediately.
 `;
       await sendEmergencySMS([phone], message);
-
-      Alert.alert("Success", "SMS composer opened.");
+      setPhone("");
     } catch (error) {
       console.error(error);
       Alert.alert("Error", "Failed to send SMS.");
@@ -107,8 +135,21 @@ Please contact or assist immediately.
           style={styles.input}
         />
 
-        <TouchableOpacity style={styles.button} onPress={handleSendSMS}>
+        {/* <TouchableOpacity style={styles.button} onPress={handleSendSMS}>
           <Text style={styles.buttonText}>Send Emergency SMS</Text>
+        </TouchableOpacity> */}
+
+        <TouchableOpacity
+          disabled={locationLoading || !sosLocation}
+          style={[
+            styles.button,
+            (locationLoading || !sosLocation) && { opacity: 0.5 },
+          ]}
+          onPress={handleSendSMS}
+        >
+          <Text style={styles.buttonText}>
+            {locationLoading ? "Fetching Location..." : "Send Emergency SMS"}
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

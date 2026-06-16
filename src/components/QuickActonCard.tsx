@@ -1,11 +1,26 @@
 import { CARD, FONT_SIZE, SPACING } from "@/constants/responsive";
+import { handleShareLocation } from "@/services/share";
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function QuickActionCard() {
   const router = useRouter();
+
+  const [loading, setLoading] = React.useState(false);
+
+  const handleShare = async () => {
+    setLoading(true);
+    await handleShareLocation();
+    setLoading(false);
+  };
   return (
     <>
       <Text style={styles.sectionTitle}>Quick Actions</Text>
@@ -14,14 +29,21 @@ export default function QuickActionCard() {
           onPress={() => router.push("/screens/emergencycontacts")}
           icon="phone-call"
           label="Contacts"
+          loading={false}
         />
 
-        <ActionCard onPress={() => {}} icon="share-2" label="Share" />
+        <ActionCard
+          onPress={handleShare}
+          icon="share-2"
+          label={loading ? "Sharing..." : "Share"}
+          loading={loading}
+        />
 
         <ActionCard
           onPress={() => router.push("/screens/soshistory")}
           icon="clock"
           label="History"
+          loading={false}
         />
       </View>
     </>
@@ -32,14 +54,20 @@ export function ActionCard({
   onPress,
   icon,
   label,
+  loading,
 }: {
   onPress: () => void;
   icon: any;
   label: string;
+  loading: boolean;
 }) {
   return (
     <TouchableOpacity onPress={onPress} style={styles.actionCard}>
-      <Feather name={icon} size={20} color="#1565C0" />
+      {loading ? (
+        <ActivityIndicator size="small" color="#1565C0" />
+      ) : (
+        <Feather name={icon} size={20} color="#1565C0" />
+      )}
       <Text style={styles.actionText}>{label}</Text>
     </TouchableOpacity>
   );
