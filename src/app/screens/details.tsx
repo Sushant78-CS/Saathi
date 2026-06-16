@@ -1,6 +1,10 @@
+import { BUTTON, FONT_SIZE, RADIUS, SPACING } from "@/constants/responsive";
+import useAuthStore from "@/store/authStore";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,6 +18,7 @@ import { Profile, saveProfile } from "../../firebase/profile";
 
 export default function CompleteProfileScreen() {
   const router = useRouter();
+  const { setProfile } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState<Profile>({
     phoneNumber: "",
@@ -55,6 +60,7 @@ export default function CompleteProfileScreen() {
     try {
       setLoading(true);
       await saveProfile(form);
+      setProfile(form);
       router.replace("/screens/home");
     } catch (error) {
       console.error("Error saving profile:", error);
@@ -65,71 +71,79 @@ export default function CompleteProfileScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>Complete Your Safety Profile</Text>
-
-        <Text style={styles.subtitle}>
-          This information helps emergency responders assist you faster during
-          emergencies.
-        </Text>
-
-        <SectionTitle title="Personal Information" />
-
-        <Input
-          label="Phone Number *"
-          value={form.phoneNumber}
-          keyboardType="phone-pad"
-          onChange={(text: string) => updateField("phoneNumber", text)}
-        />
-
-        <Input
-          label="Age"
-          value={form.age}
-          keyboardType="numeric"
-          onChange={(text: string) => updateField("age", text)}
-        />
-
-        <Input
-          label="Blood Group"
-          value={form.bloodGroup}
-          onChange={(text: string) => updateField("bloodGroup", text)}
-        />
-
-        <SectionTitle title="Emergency Contact" />
-
-        <Input
-          label="Contact Name *"
-          value={form.emergencyContact[0]?.name || ""}
-          onChange={(text: string) => updateEmergencyContact("name", text)}
-        />
-
-        <Input
-          label="Relationship *"
-          value={form.emergencyContact[0]?.relationship || ""}
-          onChange={(text: string) =>
-            updateEmergencyContact("relationship", text)
-          }
-        />
-
-        <Input
-          label="Emergency Number *"
-          value={form.emergencyContact[0]?.phone || ""}
-          keyboardType="phone-pad"
-          onChange={(text: string) => updateEmergencyContact("phone", text)}
-        />
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={handleSave}
-          disabled={loading}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
         >
-          <Text style={styles.buttonText}>
-            {loading ? "Saving..." : "Save Profile"}
-          </Text>
-        </TouchableOpacity>
+          <Text style={styles.title}>Complete Your Safety Profile</Text>
 
-        <View style={{ height: 40 }} />
-      </ScrollView>
+          <Text style={styles.subtitle}>
+            This information helps emergency responders assist you faster during
+            emergencies.
+          </Text>
+
+          <SectionTitle title="Personal Information" />
+
+          <Input
+            label="Phone Number *"
+            value={form.phoneNumber}
+            keyboardType="phone-pad"
+            onChange={(text: string) => updateField("phoneNumber", text)}
+          />
+
+          <Input
+            label="Age"
+            value={form.age}
+            keyboardType="numeric"
+            onChange={(text: string) => updateField("age", text)}
+          />
+
+          <Input
+            label="Blood Group"
+            value={form.bloodGroup}
+            onChange={(text: string) => updateField("bloodGroup", text)}
+          />
+
+          <SectionTitle title="Emergency Contact" />
+
+          <Input
+            label="Contact Name *"
+            value={form.emergencyContact[0]?.name || ""}
+            onChange={(text: string) => updateEmergencyContact("name", text)}
+          />
+
+          <Input
+            label="Relationship *"
+            value={form.emergencyContact[0]?.relationship || ""}
+            onChange={(text: string) =>
+              updateEmergencyContact("relationship", text)
+            }
+          />
+
+          <Input
+            label="Emergency Number *"
+            value={form.emergencyContact[0]?.phone || ""}
+            keyboardType="phone-pad"
+            onChange={(text: string) => updateEmergencyContact("phone", text)}
+          />
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleSave}
+            disabled={loading}
+          >
+            <Text style={styles.buttonText}>
+              {loading ? "Saving..." : "Save Profile"}
+            </Text>
+          </TouchableOpacity>
+
+          <View style={{ height: 40 }} />
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -170,60 +184,62 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    paddingHorizontal: 20,
+    paddingHorizontal: SPACING.lg,
   },
 
   title: {
-    fontSize: 26,
+    fontSize: FONT_SIZE.heading,
     fontWeight: "700",
-    marginTop: 20,
+    marginTop: SPACING.lg,
+    color: "#111827",
   },
 
   subtitle: {
-    fontSize: 13,
+    fontSize: FONT_SIZE.body,
     color: "#6B7280",
-    marginTop: 8,
-    marginBottom: 24,
-    lineHeight: 20,
+    marginTop: SPACING.sm,
+    marginBottom: SPACING.xl,
+    lineHeight: FONT_SIZE.body * 1.5,
   },
 
   section: {
-    fontSize: 18,
+    fontSize: FONT_SIZE.subtitle,
     fontWeight: "700",
-    marginBottom: 16,
-    marginTop: 10,
+    marginBottom: SPACING.md,
+    marginTop: SPACING.sm,
     color: "#111827",
   },
 
   label: {
-    fontSize: 13,
+    fontSize: FONT_SIZE.body,
     fontWeight: "600",
-    marginBottom: 8,
+    marginBottom: SPACING.sm,
     color: "#374151",
   },
 
   input: {
     borderWidth: 1,
     borderColor: "#E5E7EB",
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 14,
+    borderRadius: RADIUS.lg,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.md,
+    fontSize: FONT_SIZE.body,
     backgroundColor: "#F9FAFB",
     color: "#000",
   },
 
   button: {
     backgroundColor: "#E53935",
-    paddingVertical: 16,
-    borderRadius: 16,
-    marginTop: 20,
+    height: BUTTON.height,
+    borderRadius: BUTTON.borderRadius,
+    marginTop: SPACING.lg,
+    justifyContent: "center",
     alignItems: "center",
   },
 
   buttonText: {
     color: "#fff",
     fontWeight: "700",
-    fontSize: 15,
+    fontSize: FONT_SIZE.subtitle,
   },
 });

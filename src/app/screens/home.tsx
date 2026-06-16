@@ -1,6 +1,5 @@
 import {
   HeaderCard,
-  LocationCard,
   NearbyCard,
   QuickActionCard,
   SMSCard,
@@ -16,7 +15,7 @@ import useAuthStore from "@/store/authStore";
 import { useNearbyStore } from "@/store/nearbyStore";
 import NetInfo from "@react-native-community/netinfo";
 import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet } from "react-native";
+import { RefreshControl, ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
@@ -26,7 +25,8 @@ export default function HomeScreen() {
   const [location, setLocation] = useState<string | null>(null);
   const [sosLocation, setSosLocation] = useState<SOSAlert | null>(null);
   const [countDown, setCountDown] = useState<number | null>(null);
-  const [locationLoading, setLocationLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [locationLoading, setLocationLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (!user) {
@@ -193,20 +193,26 @@ Please contact or assist immediately.
     }
   };
 
+  const onRefresh = () => {
+    setRefreshing(true);
+    loadLocation();
+    setRefreshing(false);
+  };
+
   if (!user) {
     return null;
   }
 
-  // useEffect(() => {
-  //   const data = AsyncStorage.getItem("auth-storage");
-  //   console.log(data);
-  // }, []);
-
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <HeaderCard user={user} />
-        <LocationCard
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <HeaderCard
+          user={user}
           location={location || "Not Found"}
           loading={locationLoading}
           onRefresh={loadLocation}

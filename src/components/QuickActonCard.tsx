@@ -2,7 +2,7 @@ import { CARD, FONT_SIZE, SPACING } from "@/constants/responsive";
 import { handleShareLocation } from "@/services/share";
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   StyleSheet,
@@ -14,7 +14,7 @@ import {
 export default function QuickActionCard() {
   const router = useRouter();
 
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleShare = async () => {
     setLoading(true);

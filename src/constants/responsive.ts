@@ -46,7 +46,7 @@ export const ICON_SIZE = {
 };
 
 export const BUTTON = {
-  height: verticalScale(46),
+  height: verticalScale(49),
   borderRadius: moderateScale(12),
 };
 

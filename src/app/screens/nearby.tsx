@@ -36,10 +36,10 @@ export default function NearbyScreen() {
   const { user, profile } = useAuthStore();
 
   const [devices, setDevices] = useState<any[]>([]);
-  const [discovering, setDiscovering] = useState(false);
-  const [advertising, setAdvertising] = useState(false);
+  const [discovering, setDiscovering] = useState<boolean>(false);
+  const [advertising, setAdvertising] = useState<boolean>(false);
   const [sosLocation, setSosLocation] = useState<SOSAlert | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
+  const [isConnected, setIsConnected] = useState<boolean>(false);
 
   useEffect(() => {
     return () => {

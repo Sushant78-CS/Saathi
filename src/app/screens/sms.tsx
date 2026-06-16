@@ -25,9 +25,9 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SMSPage() {
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState<string>("");
   const [sosLocation, setSosLocation] = useState<SOSAlert | null>(null);
-  const [locationLoading, setLocationLoading] = useState(true);
+  const [locationLoading, setLocationLoading] = useState<boolean>(true);
   const { user, profile } = useAuthStore();
 
   useEffect(() => {

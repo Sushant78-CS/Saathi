@@ -1,9 +1,17 @@
+import {
+  CARD,
+  FONT_SIZE,
+  ICON_SIZE,
+  RADIUS,
+  SPACING,
+  verticalScale,
+} from "@/constants/responsive";
 import { subscribeSOSHistory } from "@/services/sos";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  ScrollView,
+  FlatList,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -37,22 +45,28 @@ const SOSHistory = () => {
         <Text style={styles.title}>SOS History</Text>
       </View>
 
-      <View style={styles.statsContainer}>
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>{alerts.length}</Text>
-          <Text style={styles.statLabel}>Total SOS</Text>
-        </View>
+      <FlatList
+        data={alerts}
+        keyExtractor={(item) => item.id}
+        showsVerticalScrollIndicator={false}
+        ListHeaderComponent={
+          <>
+            <View style={styles.statsContainer}>
+              <View style={styles.statCard}>
+                <Text style={styles.statNumber}>{alerts.length}</Text>
+                <Text style={styles.statLabel}>Total SOS</Text>
+              </View>
 
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>
-            {alerts.filter((alert) => alert.status === "ACTIVE").length}
-          </Text>
-          <Text style={styles.statLabel}>Active</Text>
-        </View>
-      </View>
-
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {alerts.length === 0 ? (
+              <View style={styles.statCard}>
+                <Text style={styles.statNumber}>
+                  {alerts.filter((alert) => alert.status === "ACTIVE").length}
+                </Text>
+                <Text style={styles.statLabel}>Active</Text>
+              </View>
+            </View>
+          </>
+        }
+        ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Ionicons name="time-outline" size={64} color="#D1D5DB" />
 
@@ -62,49 +76,41 @@ const SOSHistory = () => {
               Your emergency alerts will appear here once an SOS is triggered.
             </Text>
           </View>
-        ) : (
-          alerts.map((alert) => (
-            <TouchableOpacity key={alert.id} style={styles.historyCard}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <View style={{ flex: 1 }}>
-                  <View style={styles.cardHeader}>
-                    <View
-                      style={[
-                        styles.statusDot,
-                        {
-                          backgroundColor:
-                            alert.status === "ACTIVE" ? "#10B981" : "#EF4444",
-                        },
-                      ]}
-                    />
-                    <Text style={styles.statusText}>{alert.status}</Text>
-                  </View>
+        }
+        renderItem={({ item: alert }) => (
+          <TouchableOpacity style={styles.historyCard}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <View style={{ flex: 1 }}>
+                <View style={styles.cardHeader}>
+                  <View
+                    style={[
+                      styles.statusDot,
+                      {
+                        backgroundColor:
+                          alert.status === "ACTIVE" ? "#10B981" : "#EF4444",
+                      },
+                    ]}
+                  />
 
-                  <Text style={styles.location}>{alert.locationName}</Text>
-
-                  <Text style={styles.time}>
-                    {alert.createdAt?.toDate().toLocaleString("en-IN", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                      hour: "numeric",
-                      minute: "2-digit",
-                    })}
-                  </Text>
+                  <Text style={styles.statusText}>{alert.status}</Text>
                 </View>
 
-                <Ionicons name="chevron-forward" size={16} color="#9CA3AF" />
+                <Text style={styles.location}>{alert.locationName}</Text>
+
+                <Text style={styles.time}>
+                  {alert.createdAt?.toDate().toLocaleString("en-IN")}
+                </Text>
               </View>
-            </TouchableOpacity>
-          ))
+            </View>
+          </TouchableOpacity>
         )}
-      </ScrollView>
+      />
     </SafeAreaView>
   );
 };
@@ -115,46 +121,46 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFF",
-    padding: 20,
+    padding: SPACING.lg,
   },
 
   header: {
     position: "relative",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 18,
-    height: 40,
+    marginBottom: SPACING.lg,
+    height: verticalScale(40),
   },
 
   emptyContainer: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 80,
+    paddingVertical: verticalScale(80),
   },
 
   emptyTitle: {
-    fontSize: 18,
+    fontSize: FONT_SIZE.subtitle,
     fontWeight: "700",
     color: "#111827",
-    marginTop: 16,
+    marginTop: SPACING.md,
   },
 
   emptySubtitle: {
-    fontSize: 14,
+    fontSize: FONT_SIZE.body,
     color: "#6B7280",
     textAlign: "center",
-    marginTop: 8,
-    paddingHorizontal: 32,
-    lineHeight: 20,
+    marginTop: SPACING.sm,
+    paddingHorizontal: SPACING.xl,
+    lineHeight: FONT_SIZE.body * 1.5,
   },
 
   backButton: {
     position: "absolute",
     left: 0,
-    width: 46,
-    height: 46,
-    borderRadius: 24,
+    width: ICON_SIZE.xl + SPACING.sm,
+    height: ICON_SIZE.xl + SPACING.sm,
+    borderRadius: RADIUS.full,
     backgroundColor: "#F3F4F6",
     borderWidth: 1,
     borderColor: "#E5E7EB",
@@ -163,17 +169,16 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 22,
+    fontSize: FONT_SIZE.title,
     fontWeight: "700",
     color: "#111827",
   },
 
   historyCard: {
     backgroundColor: "#F3F4F6",
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 8,
-
+    borderRadius: RADIUS.md,
+    padding: CARD.padding,
+    marginBottom: SPACING.sm,
     borderWidth: 1,
     borderColor: "#E5E7EB",
   },
@@ -181,59 +186,58 @@ const styles = StyleSheet.create({
   cardHeader: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 4,
+    marginBottom: SPACING.xs,
   },
 
   statusDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    marginRight: 6,
+    marginRight: SPACING.xs,
   },
 
   statusText: {
-    fontSize: 12,
+    fontSize: FONT_SIZE.small,
     fontWeight: "600",
   },
 
   location: {
-    fontSize: 14,
+    fontSize: FONT_SIZE.body,
     fontWeight: "600",
     color: "#111827",
   },
 
   time: {
-    marginTop: 2,
-    fontSize: 12,
+    marginTop: SPACING.xs / 2,
+    fontSize: FONT_SIZE.small,
     color: "#6B7280",
   },
 
   statsContainer: {
     flexDirection: "row",
-    gap: 10,
-    marginBottom: 16,
+    gap: SPACING.sm,
+    marginBottom: SPACING.md,
   },
 
   statCard: {
     flex: 1,
     backgroundColor: "#F3F4F6",
-    borderRadius: 12,
-    paddingVertical: 14,
+    borderRadius: RADIUS.md,
+    paddingVertical: SPACING.md,
     alignItems: "center",
-
     borderWidth: 1,
     borderColor: "#E5E7EB",
   },
 
   statNumber: {
-    fontSize: 22,
+    fontSize: FONT_SIZE.title,
     fontWeight: "700",
     color: "#E53935",
   },
 
   statLabel: {
-    marginTop: 2,
-    fontSize: 12,
+    marginTop: SPACING.xs / 2,
+    fontSize: FONT_SIZE.small,
     color: "#6B7280",
   },
 });

@@ -1,3 +1,4 @@
+import { FONT_SIZE, SPACING } from "@/constants/responsive";
 import { Feather } from "@expo/vector-icons";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
@@ -18,11 +19,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.md,
   },
   settingText: {
-    color: "#000",
-    fontSize: 13,
+    color: "#374151",
+    fontSize: FONT_SIZE.body,
+    fontWeight: "500",
   },
 });

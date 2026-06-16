@@ -16,7 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function DevicesScreen() {
   const router = useRouter();
   const [devices, setDevices] = useState<any[]>([]);
-  const [scanning, setScanning] = useState(false);
+  const [scanning, setScanning] = useState<boolean>(false);
   const [connectedDevice, setConnectedDevice] = useState<Device | null>(null);
 
   const startScan = async () => {

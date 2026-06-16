@@ -13,8 +13,8 @@ import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
+  FlatList,
   Modal,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -158,49 +158,59 @@ export default function EmergencyContactsScreen() {
         <View style={{ width: 44 }} />
       </View>
 
-      <Text style={styles.subtitle}>
-        These contacts can be notified during emergencies.
-      </Text>
-      <Text style={styles.contactLimit}>
-        {profileData?.emergencyContact.length || 0}/3 Emergency Contacts
-      </Text>
+      <FlatList
+        data={profileData?.emergencyContact || []}
+        keyExtractor={(_, index) => index.toString()}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 100 }}
+        ListHeaderComponent={
+          <>
+            <Text style={styles.subtitle}>
+              These contacts can be notified during emergencies.
+            </Text>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {!profileData ? (
+            <Text style={styles.contactLimit}>
+              {profileData?.emergencyContact.length || 0}/3 Emergency Contacts
+            </Text>
+          </>
+        }
+        ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Ionicons name="people-outline" size={60} color="#CBD5E1" />
+
             <Text style={styles.emptyTitle}>No Emergency Contacts</Text>
+
             <Text style={styles.emptySubtitle}>
               Add a trusted contact who can be notified during emergencies.
             </Text>
           </View>
-        ) : (
-          profileData.emergencyContact.map((contact, index) => (
-            <View key={index} style={styles.contactCard}>
-              <View style={styles.contactHeader}>
-                <Ionicons name="person-circle" size={42} color="#E53935" />
+        }
+        renderItem={({ item: contact, index }) => (
+          <View style={styles.contactCard}>
+            <View style={styles.contactHeader}>
+              <Ionicons name="person-circle" size={42} color="#E53935" />
 
-                <View style={styles.contactInfo}>
-                  <Text style={styles.contactName}>{contact.name}</Text>
+              <View style={styles.contactInfo}>
+                <Text style={styles.contactName}>{contact.name}</Text>
 
-                  <Text style={styles.contactPhone}>+91 {contact.phone}</Text>
+                <Text style={styles.contactPhone}>+91 {contact.phone}</Text>
 
-                  <Text style={styles.contactRelation}>
-                    {contact.relationship}
-                  </Text>
-                </View>
+                <Text style={styles.contactRelation}>
+                  {contact.relationship}
+                </Text>
               </View>
-
-              <TouchableOpacity
-                style={styles.deleteButton}
-                onPress={() => confirmDelete(index)}
-              >
-                <Text style={styles.deleteText}>Delete</Text>
-              </TouchableOpacity>
             </View>
-          ))
+
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={() => confirmDelete(index)}
+            >
+              <Text style={styles.deleteText}>Delete</Text>
+            </TouchableOpacity>
+          </View>
         )}
-      </ScrollView>
+      />
+
       <TouchableOpacity
         style={[
           styles.addButton,
