@@ -1,56 +1,219 @@
-# Welcome to your Expo app 👋
+# 🛡️ Yaatri
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Yaatri** is an emergency safety mobile application built with React Native and Firebase that helps users send SOS alerts, share live location, manage emergency contacts, and communicate during emergencies even when internet connectivity is unavailable.
 
-## Get started
+---
 
-1. Install dependencies
+## 🚨 Problem Statement
 
-   ```bash
-   npm install
-   ```
+During emergencies, internet connectivity is not always available. Traditional safety applications depend heavily on mobile data and cloud services, making them unreliable in disaster-prone or remote areas.
 
-2. Start the app
+Yaatri addresses this challenge by providing:
 
-   ```bash
-   npx expo start
-   ```
+- Emergency SOS alerts
+- Offline emergency message relaying
+- Nearby device communication
+- Emergency contact notifications
+- Crash detection support
+- SOS history tracking
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## ✨ Features
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### Emergency SOS
 
-## Get a fresh project
+- One-tap SOS activation
+- 5-second cancellation countdown
+- Live location sharing
+- Emergency alert creation
 
-When you're ready, run:
+### Offline SOS Relay Network
 
-```bash
-npm run reset-project
+- Nearby device discovery
+- Device-to-device emergency communication
+- SOS message forwarding through nearby users
+- Works without internet connection
+
+### Emergency Contacts
+
+- Add trusted contacts
+- Quick emergency notification
+- Contact management
+
+### Location Services
+
+- Real-time location tracking
+- Reverse geocoding
+- Google Maps integration
+
+### SOS History
+
+- View previous emergency alerts
+- Track active and completed alerts
+
+### Crash Detection
+
+- Automatic emergency workflow initiation
+- Sensor-based accident detection
+
+### Authentication
+
+- Secure Firebase Authentication
+- User profile management
+- Persistent login sessions
+
+---
+
+## 🏗️ Tech Stack
+
+### Frontend
+
+- React Native
+- Expo
+- TypeScript
+- Expo Router
+- Zustand
+
+### Backend & Database
+
+- Firebase Authentication
+- Cloud Firestore
+
+### Device Features
+
+- Expo Location
+- Expo SMS
+- Expo Sensors
+- Expo Nearby Connections
+
+---
+
+## 📱 Screens
+
+- Authentication
+- Home
+- SOS Activation
+- Emergency Contacts
+- Profile
+- SOS History
+- Offline Relay Network
+
+---
+
+## 🧠 Architecture
+
+```text
+User
+  │
+  ▼
+React Native App
+  │
+  ├── Firebase Authentication
+  ├── Firestore Database
+  ├── Location Services
+  ├── SMS Services
+  ├── Crash Detection
+  └── Nearby Connections
+            │
+            ▼
+     Offline Relay Network
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-### Other setup steps
+## 📂 Project Structure
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+```text
+src
+├── app
+├── components
+├── services
+├── store
+├── firebase
+├── constants
+└── hooks
+```
 
-## Learn more
+---
 
-To learn more about developing your project with Expo, look at the following resources:
+## ⚙️ Installation
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### Clone Repository
 
-## Join the community
+```bash
+git clone https://github.com/Sushant78-CS/Yaatri.git
+cd Yaatri
+```
 
-Join our community of developers creating universal apps.
+### Install Dependencies
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+bun install
+```
+
+or
+
+```bash
+npm install
+```
+
+### Environment Variables
+
+Create a `.env` file:
+
+```env
+EXPO_PUBLIC_FIREBASE_API_KEY=
+EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=
+EXPO_PUBLIC_FIREBASE_PROJECT_ID=
+EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=
+EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+EXPO_PUBLIC_FIREBASE_APP_ID=
+```
+
+### Start Development Server
+
+```bash
+npx expo start
+```
+
+---
+
+## 🔒 Permissions
+
+Yaatri requires:
+
+- Location
+- SMS
+- Bluetooth
+- Nearby Devices
+- Internet
+
+These permissions are used solely for emergency communication and safety features.
+
+---
+
+## 🚀 Future Enhancements
+
+- AI-powered emergency classification
+- Satellite messaging support
+- Emergency responder dashboard
+- Multi-hop mesh networking
+- Medical profile sharing
+- Voice activated SOS
+
+---
+
+## 👨‍💻 Author
+
+**Sushant Sonkamble**
+
+GitHub: https://github.com/Sushant78-CS
+
+LinkedIn: https://linkedin.com/in/sushant-sonkamble
+
+---
+
+## 📄 License
+
+This project is developed for educational, research, and safety-focused purposes.

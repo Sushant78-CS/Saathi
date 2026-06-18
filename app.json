@@ -4,7 +4,7 @@
     "slug": "rakshak",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/sosicon.png",
     "scheme": "savehuman",
     "userInterfaceStyle": "automatic",
     "ios": {
@@ -46,7 +46,7 @@
         {
           "backgroundColor": "#208AEF",
           "android": {
-            "image": "./assets/images/splash-icon.png",
+            "image": "./assets/images/yaatriicon.png",
             "imageWidth": 76
           }
         }

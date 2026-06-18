@@ -9,7 +9,8 @@ import {
 import useAuthStore from "@/store/authStore";
 import { Stack } from "expo-router";
 import React, { useEffect } from "react";
-import { ActivityIndicator, StatusBar, View } from "react-native";
+import { StatusBar } from "react-native";
+import SplashPreview from "./screens/splashscreen";
 
 const RootLayout = () => {
   useAuth();
@@ -42,18 +43,7 @@ function InitialRootLayout() {
   }, []);
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "#fff",
-        }}
-      >
-        <ActivityIndicator size="large" color="#000" />
-      </View>
-    );
+    return <SplashPreview />;
   }
 
   return (
